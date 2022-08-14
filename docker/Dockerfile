@@ -1,5 +1,6 @@
 FROM node:10.15.3
 
+RUN npm config set registry=https://registry.npmmirror.com
 # 安装依赖库
 RUN npm install -g babel-cli \
     && npm install -g cnpm --registry=https://registry.npm.taobao.org
@@ -10,14 +11,14 @@ RUN mkdir -p /opt/data /opt/server /opt/web /opt/logs /var/cache/nginx/client_te
 # 增加前端页面显示
 WORKDIR /opt/client
 ADD client /opt/client
-RUN cnpm install
+RUN npm install
 RUN npm run build
 
 # 增加server
 WORKDIR /opt/server
 ADD server /opt/server
 # RUN cnpm install && cnpm install bcrypt@latest --save
-RUN cnpm install
+RUN npm install
 
 # 增加前端页面到server
 # ADD client/dist /opt/web

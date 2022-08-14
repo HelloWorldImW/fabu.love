@@ -78,12 +78,13 @@ module.exports = class UploadRouter {
         await Version.updateOne({ _id: result.version._id }, {
             released: result.app.autoPublish
         })
-        if (result.app.autoPublish) {
-            await App.updateOne({ _id: result.app._id }, {
-                releaseVersionId: result.version._id,
-                releaseVersionCode: result.version.versionCode
-            })
-        }
+        // 自动发布
+        // if (result.app.autoPublish) {
+        await App.updateOne({ _id: result.app._id }, {
+            releaseVersionId: result.version._id,
+            releaseVersionCode: result.version.versionCode
+        })
+        // }
         console.log(result.app.autoPublish)
         console.log(result.version.released)
         ctx.body = responseWrapper(result);
@@ -154,7 +155,7 @@ async function parseAppAndInsertToDB(file, user, team) {
         await app.save()
         info.uploader = user.username;
         info.uploaderId = user._id;
-        info.size = fs.statSync(fileRealPath).size
+        info.size = file.size;
         var version = Version(info)
         version.md5 = filemd5
         version.appId = app._id;
@@ -170,7 +171,7 @@ async function parseAppAndInsertToDB(file, user, team) {
     if (!version) {
         info.uploader = user.username;
         info.uploaderId = user._id;
-        info.size = fs.statSync(fileRealPath).size
+        info.size = file.size;
         var version = Version(info)
         version.appId = app._id;
         version.md5 = filemd5
